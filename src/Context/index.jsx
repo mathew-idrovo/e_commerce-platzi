@@ -6,11 +6,11 @@ import { createContext } from 'react'
 
 export const ShoppingCartProvider = ({children}) => {
 
-    const [count, setcount] = useState(0)
+    const [count, setCount] = useState(0)
   return (
     <ShoppingCartContext.Provider value={{
         count,
-        setcount
+        setCount
     }}>
      {children}
     </ShoppingCartContext.Provider>
