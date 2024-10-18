@@ -1,10 +1,35 @@
 import { createContext, useState, useEffect } from 'react'
+import { createRoutesFromElements } from 'react-router-dom'
 
 export const ShoppingCartContext = createContext()
 
-export const ShoppingCartProvider = ({children}) => {
+export const initializaLocalStorage = () => {
+  const accountInLocalStorage = localStorage.getItem('account')
+  const signOutInLocalStorage = localStorage.getItem('sign-out')
+  let parsedAccount
+  let parsedSignOut
+
+  if (!accountInLocalStorage) {
+    localStorage.setItem('account', JSON.stringify({}))
+    parsedAccount = {}
+  } else {
+    parsedAccount = JSON.parse(accountInLocalStorage)
+  }
+
+  if (!signOutInLocalStorage) {
+    localStorage.setItem('sign-out', JSON.stringify(false))
+    parsedSignOut = false
+  } else {
+    parsedSignOut = JSON.parse(signOutInLocalStorage)
+  }
+}
+export const ShoppingCartProvider = ({ children }) => {
   // Shopping Cart · Increment quantity
   const [count, setCount] = useState(0)
+  const [account, setAccount] = useState({})
+  const [singOut, setSingOut] = useState(false)
+
+  // Inizializar en local
 
   // Product Detail · Open/Close
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false)
@@ -37,16 +62,20 @@ export const ShoppingCartProvider = ({children}) => {
 
   useEffect(() => {
     fetch('https://api.escuelajs.co/api/v1/products')
-      .then(response => response.json())
-      .then(data => setItems(data))
+      .then((response) => response.json())
+      .then((data) => setItems(data))
   }, [])
 
   const filteredItemsByTitle = (items, searchByTitle) => {
-    return items?.filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
+    return items?.filter((item) =>
+      item.title.toLowerCase().includes(searchByTitle.toLowerCase())
+    )
   }
 
   const filteredItemsByCategory = (items, searchByCategory) => {
-    return items?.filter(item => item.category.name.toLowerCase().includes(searchByCategory.toLowerCase()))
+    return items?.filter((item) =>
+      item.category.name.toLowerCase().includes(searchByCategory.toLowerCase())
+    )
   }
 
   const filterBy = (searchType, items, searchByTitle, searchByCategory) => {
@@ -59,7 +88,9 @@ export const ShoppingCartProvider = ({children}) => {
     }
 
     if (searchType === 'BY_TITLE_AND_CATEGORY') {
-      return filteredItemsByCategory(items, searchByCategory).filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
+      return filteredItemsByCategory(items, searchByCategory).filter((item) =>
+        item.title.toLowerCase().includes(searchByTitle.toLowerCase())
+      )
     }
 
     if (!searchType) {
@@ -68,36 +99,57 @@ export const ShoppingCartProvider = ({children}) => {
   }
 
   useEffect(() => {
-    if (searchByTitle && searchByCategory) setFilteredItems(filterBy('BY_TITLE_AND_CATEGORY', items, searchByTitle, searchByCategory))
-    if (searchByTitle && !searchByCategory) setFilteredItems(filterBy('BY_TITLE', items, searchByTitle, searchByCategory))
-    if (!searchByTitle && searchByCategory) setFilteredItems(filterBy('BY_CATEGORY', items, searchByTitle, searchByCategory))
-    if (!searchByTitle && !searchByCategory) setFilteredItems(filterBy(null, items, searchByTitle, searchByCategory))
+    if (searchByTitle && searchByCategory)
+      setFilteredItems(
+        filterBy(
+          'BY_TITLE_AND_CATEGORY',
+          items,
+          searchByTitle,
+          searchByCategory
+        )
+      )
+    if (searchByTitle && !searchByCategory)
+      setFilteredItems(
+        filterBy('BY_TITLE', items, searchByTitle, searchByCategory)
+      )
+    if (!searchByTitle && searchByCategory)
+      setFilteredItems(
+        filterBy('BY_CATEGORY', items, searchByTitle, searchByCategory)
+      )
+    if (!searchByTitle && !searchByCategory)
+      setFilteredItems(filterBy(null, items, searchByTitle, searchByCategory))
   }, [items, searchByTitle, searchByCategory])
 
   return (
-    <ShoppingCartContext.Provider value={{
-      count,
-      setCount,
-      openProductDetail,
-      closeProductDetail,
-      isProductDetailOpen,
-      productToShow,
-      setProductToShow,
-      cartProducts,
-      setCartProducts,
-      isCheckoutSideMenuOpen,
-      openCheckoutSideMenu,
-      closeCheckoutSideMenu,
-      order,
-      setOrder,
-      items,
-      setItems,
-      searchByTitle,
-      setSearchByTitle,
-      filteredItems,
-      searchByCategory,
-      setSearchByCategory
-    }}>
+    <ShoppingCartContext.Provider
+      value={{
+        count,
+        setCount,
+        openProductDetail,
+        closeProductDetail,
+        isProductDetailOpen,
+        productToShow,
+        setProductToShow,
+        cartProducts,
+        setCartProducts,
+        isCheckoutSideMenuOpen,
+        openCheckoutSideMenu,
+        closeCheckoutSideMenu,
+        order,
+        setOrder,
+        items,
+        setItems,
+        searchByTitle,
+        setSearchByTitle,
+        filteredItems,
+        searchByCategory,
+        setSearchByCategory,
+        account,
+        setAccount,
+        singOut,
+        setSingOut
+      }}
+    >
       {children}
     </ShoppingCartContext.Provider>
   )
