@@ -1,35 +1,101 @@
-import { useRoutes, BrowserRouter } from 'react-router-dom'
-import { ShoppingCartProvider } from '../../Context'
-import Home from '../Home'
-import MyAccount from '../MyAccount'
-import MyOrder from '../MyOrder'
-import MyOrders from '../MyOrders'
-import NotFound from '../NotFound'
-import SignIn from '../SignIn'
-import Navbar from '../../Components/Navbar'
+import { useRoutes, BrowserRouter } from "react-router-dom";
+import { ShoppingCartContext, ShoppingCartProvider } from "../../Context";
+import Home from "../Home";
+import MyAccount from "../MyAccount";
+import MyOrder from "../MyOrder";
+import MyOrders from "../MyOrders";
+import NotFound from "../NotFound";
+import SignIn from "../SignIn";
+import Navbar from "../../Components/Navbar";
 
-import './App.css'
-import CheckoutSideMenu from '../../Components/CheckoutSideMenu'
+import "./App.css";
+import CheckoutSideMenu from "../../Components/CheckoutSideMenu";
+import { useContext } from "react";
+import { Navigate } from "react-router-dom";
 
 const AppRoutes = () => {
-  let routes = useRoutes([
-    { path: '/', element: <Home /> },
-    { path: '/clothes', element: <Home /> },
-    { path: '/electronics', element: <Home /> },
-    { path: '/furnitures', element: <Home /> },
-    { path: '/toys', element: <Home /> },
-    { path: '/othes', element: <Home /> },
-    { path: '/my-account', element: <MyAccount /> },
-    { path: '/my-order', element: <MyOrder /> },
-    { path: '/my-orders', element: <MyOrders /> },
-    { path: '/my-orders/last', element: <MyOrder /> },
-    { path: '/my-orders/:id', element: <MyOrder /> },
-    { path: '/sign-in', element: <SignIn /> },
-    { path: '/*', element: <NotFound /> },
-  ])
+  const context = useContext(ShoppingCartContext);
 
-  return routes
-}
+  const account = localStorage.getItem("account");
+  const parsedAccount = JSON.parse(account);
+
+  const singOut = localStorage.getItem("sign-out");
+  const parsedSignOut = JSON.parse(singOut);
+
+  const noAccountInLocalStorage = parsedAccount
+    ? Object.keys(parsedAccount).length === 0
+    : true;
+  const noAccountInLocalState = Object.keys(context.account).length === 0;
+
+  const hasUserAnAccount = !noAccountInLocalState || !noAccountInLocalStorage;
+  const isUserSignOut = context.singOut || parsedSignOut;
+
+  let routes = useRoutes([
+    {
+      path: "/",
+      element:
+        hasUserAnAccount && !isUserSignOut ? (
+          <Home />
+        ) : (
+          <Navigate replace to={"/sign-in"} />
+        ),
+    },
+    {
+      path: "/clothes",
+      element:
+        hasUserAnAccount && !isUserSignOut ? (
+          <Home />
+        ) : (
+          <Navigate replace to={"/sign-in"} />
+        ),
+    },
+    {
+      path: "/electronics",
+      element:
+        hasUserAnAccount && !isUserSignOut ? (
+          <Home />
+        ) : (
+          <Navigate replace to={"/sign-in"} />
+        ),
+    },
+    {
+      path: "/furnitures",
+      element:
+        hasUserAnAccount && !isUserSignOut ? (
+          <Home />
+        ) : (
+          <Navigate replace to={"/sign-in"} />
+        ),
+    },
+    {
+      path: "/toys",
+      element:
+        hasUserAnAccount && !isUserSignOut ? (
+          <Home />
+        ) : (
+          <Navigate replace to={"/sign-in"} />
+        ),
+    },
+    {
+      path: "/others",
+      element:
+        hasUserAnAccount && !isUserSignOut ? (
+          <Home />
+        ) : (
+          <Navigate replace to={"/sign-in"} />
+        ),
+    },
+    { path: "/my-account", element: <MyAccount /> },
+    { path: "/my-order", element: <MyOrder /> },
+    { path: "/my-orders", element: <MyOrders /> },
+    { path: "/my-orders/last", element: <MyOrder /> },
+    { path: "/my-orders/:id", element: <MyOrder /> },
+    { path: "/sign-in", element: <SignIn /> },
+    { path: "/*", element: <NotFound /> },
+  ]);
+
+  return routes;
+};
 
 const App = () => {
   return (
@@ -40,7 +106,7 @@ const App = () => {
         <CheckoutSideMenu />
       </BrowserRouter>
     </ShoppingCartProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

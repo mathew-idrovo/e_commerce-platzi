@@ -3,21 +3,43 @@ import Layout from "../../Components/Layout";
 import { useContext } from "react";
 import { ShoppingCartContext } from "../../Context";
 import { useState } from "react";
+import { useRef } from "react";
+import { Navigate } from "react-router-dom";
 
 function SignIn() {
   const context = useContext(ShoppingCartContext);
   const [view, setView] = useState("user-info");
+  const form = useRef(null);
 
+  const createAnAccount = () => {
+    const formData = new FormData(form.current);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+    };
+    const stringifiedAccount = JSON.stringify(data);
+    localStorage.setItem("account", stringifiedAccount);
+    context.setAccount(data);
+    handleSingIn();
+  };
   const account = localStorage.getItem("account");
   const parsedAccount = JSON.parse(account);
-
+  // Has an account
   const noAccountInLocalStorage = parsedAccount
     ? Object.keys(parsedAccount).length === 0
     : true;
-  const noAccountInLocalState = parsedAccount
+  const noAccountInLocalState = context.account
     ? Object.keys(context.account).length === 0
     : true;
-  const hasUserAnAccount = !noAccountInLocalState || !noAccountInLocalStorage;
+  const hasUserAnAccount = !noAccountInLocalStorage || !noAccountInLocalState;
+
+  const handleSingIn = () => {
+    const stringifiedSingOut = JSON.stringify(false);
+    localStorage.setItem("sign-out", stringifiedSingOut);
+    context.setSingOut(false);
+    return <Navigate replace to={"/"} />;
+  };
 
   const renderLogin = () => {
     return (
@@ -35,6 +57,7 @@ function SignIn() {
             <button
               className="bg-black disabled:bg-black/40 text-white  w-full rounded-lg py-3 mt-4 mb-2"
               disabled={!hasUserAnAccount}
+              onClick={() => handleSingIn()}
             >
               Log in
             </button>
@@ -59,7 +82,61 @@ function SignIn() {
       </>
     );
   };
-  const renderCreateUserInfo = () => {};
+  const renderCreateUserInfo = () => {
+    return (
+      <>
+        <form ref={form} className="flex flex-col gap-4 w-80">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="name" className=" font-light text-sm">
+              Your name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name "
+              defaultValue={parsedAccount?.name}
+              placeholder="peter"
+              className=" rounded-lg border border-black placeholder:font-light placeholder:text-sm placeholder:text-black/60 focus:outline-line-none py-2 px-4"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="email" className=" font-light text-sm">
+              Your email
+            </label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              defaultValue={parsedAccount?.email}
+              placeholder="peter@gmail.com"
+              className=" rounded-lg border border-black placeholder:font-light placeholder:text-sm placeholder:text-black/60 focus:outline-line-none py-2 px-4"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="password" className=" font-light text-sm">
+              Your password
+            </label>
+            <input
+              type="text"
+              id="password"
+              name="password"
+              defaultValue={parsedAccount?.password}
+              placeholder="******"
+              className=" rounded-lg border border-black placeholder:font-light placeholder:text-sm placeholder:text-black/60 focus:outline-line-none py-2 px-4"
+            />
+          </div>
+          <Link to="/">
+            <button
+              className="bg-black text-white w-full rounded-lg py-3"
+              onClick={() => createAnAccount()}
+            >
+              create
+            </button>
+          </Link>
+        </form>
+      </>
+    );
+  };
 
   const renderView = () =>
     view === "create-user-info" ? renderCreateUserInfo() : renderLogin();
