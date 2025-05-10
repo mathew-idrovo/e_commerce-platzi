@@ -1,32 +1,32 @@
-import React from "react";
-import { useContext } from "react";
-import { NavLink } from "react-router-dom";
-import { ShoppingCartContext } from "../../Context";
-import { ShoppingBagIcon } from "@heroicons/react/16/solid";
-import { ShoppingCart } from "../ShoppingCart";
+import React from 'react'
+import { useContext } from 'react'
+import { NavLink } from 'react-router-dom'
+import { ShoppingCartContext } from '../../Context'
+import { ShoppingBagIcon } from '@heroicons/react/16/solid'
+import { ShoppingCart } from '../ShoppingCart'
 
 const Navbar = () => {
-  const context = useContext(ShoppingCartContext);
+  const context = useContext(ShoppingCartContext)
 
-  const activeStyle = "underline underline-offset-4";
+  const activeStyle = 'underline underline-offset-4'
 
-  const singOut = localStorage.getItem("sign-out");
-  const parsedSignOut = JSON.parse(singOut);
-  const isUserSignOut = context.singOut || parsedSignOut;
-  const account = localStorage.getItem("account");
-  const parsedAccount = JSON.parse(account);
+  const singOut = localStorage.getItem('sign-out')
+  const parsedSignOut = JSON.parse(singOut)
+  const isUserSignOut = context.singOut || parsedSignOut
+  const account = localStorage.getItem('account')
+  const parsedAccount = JSON.parse(account)
   const handleSignOut = () => {
-    const stringifiedSignOut = JSON.stringify(true);
-    localStorage.setItem("sign-out", stringifiedSignOut);
-    context.setSingOut(true);
-  };
+    const stringifiedSignOut = JSON.stringify(true)
+    localStorage.setItem('sign-out', stringifiedSignOut)
+    context.setSingOut(true)
+  }
   const noAccountInLocalStorage = parsedAccount
     ? Object.keys(parsedAccount).length === 0
-    : true;
+    : true
   const noAccountInLocalState = parsedAccount
     ? Object.keys(context.account).length === 0
-    : true;
-  const hasUserAnAccount = !noAccountInLocalState || !noAccountInLocalStorage;
+    : true
+  const hasUserAnAccount = !noAccountInLocalState || !noAccountInLocalStorage
 
   const renderView = () => {
     if (!isUserSignOut && hasUserAnAccount) {
@@ -40,7 +40,7 @@ const Navbar = () => {
             Sign out
           </NavLink>
         </li>
-      );
+      )
     } else {
       return (
         <>
@@ -71,14 +71,14 @@ const Navbar = () => {
             </NavLink>
           </li>
         </>
-      );
+      )
     }
-  };
+  }
   return (
     <nav className="flex justify-between items-center fixed z-10 top-0 w-full py-5 px-8 text-sm font-light">
       <ul className="flex items-center gap-3">
         <li className="font-semibold text-lg">
-          <NavLink to={`${isUserSignOut ? "/sign-in" : "/"}`}>Shopi</NavLink>
+          <NavLink to={`${isUserSignOut ? '/sign-in' : '/'}`}>Shopi</NavLink>
         </li>
         <li className="font-semibold text-lg">
           <NavLink
@@ -87,7 +87,7 @@ const Navbar = () => {
           >
             All
           </NavLink>
-        </li>{" "}
+        </li>{' '}
         <li className="font-semibold text-lg">
           <NavLink
             to="/clothes"
@@ -136,7 +136,7 @@ const Navbar = () => {
         </li>
       </ul>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
